@@ -1,0 +1,20 @@
+- name: Remove Pi user
+  user:
+    name: pi
+    state: absent
+
+- name: Create spacetango user
+  user:
+    name: spacetango
+    comment: SpaceTango user for ssh connection
+    state: present
+    password: $6$glueckskleesalt$46GE40xN7XpasLavMGSORSS/K4I95.0V5A/MIxJv3AaD/shS.UvHbfCfdnAoDWylM3jfPLjIuKfCOr3szOO1U.
+    create_home: false
+
+- name: Create download folder
+  file:
+    path: /download
+    owner: spacetango
+    group: spacetango
+    state: directory
+    mode: "777"

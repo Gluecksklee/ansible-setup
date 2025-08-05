@@ -1,0 +1,7 @@
+- name: Set authorized keys
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ item }}"
+  with_file:
+    - ADD_YOUR_OWN_HERE

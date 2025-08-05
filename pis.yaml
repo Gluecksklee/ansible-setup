@@ -1,0 +1,15 @@
+- name: setup pis
+  hosts: all
+  remote_user: root
+
+  roles:
+    - ssh_keys
+    - packages
+    - python
+    - hardware
+    - rtc
+    - network
+    - camera
+    - spacetango
+    - uart
+    - gluecksklee

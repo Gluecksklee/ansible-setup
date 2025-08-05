@@ -1,0 +1,6 @@
+- name: Enable hwclock overlay for ds1307 dtoverlay
+  lineinfile:
+    state: present
+    path: /boot/config.txt
+    line: "dtoverlay=i2c-rtc,ds1307"
+    regexp: "dtoverlay=i2c-rtc,ds1307"

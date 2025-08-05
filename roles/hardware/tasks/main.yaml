@@ -1,0 +1,58 @@
+- name: Enable hardware PWM dtoverlay
+  lineinfile:
+    state: present
+    path: /boot/config.txt
+    line: "dtoverlay=pwm-2chan,pin=12,func=4,pin2=13,func2=4"
+    regexp: "dtoverlay=pwm-2chan,pin=12,func=4,pin2=13,func2=4"
+
+- name: Enable I2C dtoverlay
+  lineinfile:
+    state: present
+    path: /boot/config.txt
+    line: "dtparam=i2c_arm=on,i2c_arm_baudrate=50000"
+    regexp: "#dtparam=i2c_arm=on"
+
+- name: Load I2C kernel modules
+  modprobe:
+    name: i2c-dev
+
+- name: Enable I2C kernel module
+  blockinfile:
+    state: present
+    path: /etc/modules
+    block: |
+      i2c-dev
+
+- name: Disable ACT LED trigger in boot config
+  blockinfile:
+    state: present
+    path: /boot/config.txt
+    block: |
+      # Disable the ACT LED on the Pi Zero.
+      dtparam=act_led_trigger=none
+
+- name: Disable ACT LED at reboot
+  ansible.builtin.cron:
+    name: Disable ACT LED at reboot
+    special_time: reboot
+    job: "echo 1 | sudo tee /sys/class/leds/led0/brightness"
+
+- name: Disable HDMI
+  ansible.builtin.cron:
+    name: Disable HDMI
+    special_time: reboot
+    job: "/usr/bin/tvservice -o"
+
+- name: Disable HDMI - replace vc4-kms-v3d with fake version
+  lineinfile:
+    state: present
+    path: /boot/config.txt
+    line: "dtoverlay=vc4-fkms-v3d"
+    regexp: "dtoverlay=vc4-kms-v3d"
+
+- name: Disable Wifi
+  lineinfile:
+    state: present
+    path: /boot/config.txt
+    line: "#dtoverlay=disable-wifi"
+    regexp: "(#)*dtoverlay=disable-wifi"

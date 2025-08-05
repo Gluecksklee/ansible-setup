@@ -1,0 +1,14 @@
+- name: Install pip packages
+  pip:
+    name:
+      - bme680
+      - hydra-core
+      - rpi-hardware-pwm
+      - sqlmodel
+      - colorlog
+      - picamera
+      - pyserial
+      - psutil
+      - tqdm
+      - cutie
+    state: present

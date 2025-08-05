@@ -1,0 +1,6 @@
+- name: Disable bluetooth in dt-overlay to enable UART
+  lineinfile:
+    state: present
+    path: /boot/config.txt
+    line: "dtoverlay=disable-bt"
+    regexp: "dtoverlay=disable-bt"

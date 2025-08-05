@@ -1,0 +1,48 @@
+- name: Create root directories for hydra
+  file:
+    state: directory
+    path: /root/{{ item }}
+  with_items:
+    - data
+    - logs
+
+- name: Create directories for Space Tango and gives them permissions
+  file:
+    state: directory
+    path: /{{ item }}
+    mode: '666'
+  with_items:
+    - download
+    - upload
+
+- name: Clone repo
+  git:
+    repo: "https://github.com/Gluecksklee/main-board.git"
+    dest: /root/main-board
+    force: true
+
+- name: Link gluecksklee service file
+  file:
+    src: /root/main-board/gluecksklee.service
+    dest: /usr/lib/systemd/system/gluecksklee.service
+    state: link
+
+- name: Enable gluecksklee service
+  systemd:
+    name: gluecksklee.service
+    state: started
+    enabled: true
+
+- name: Backup database every day
+  ansible.builtin.cron:
+    name: Backup database every day
+    hour: 0
+    minute: 0
+    job: "touch /upload/database"
+
+
+- name: Save status every hour
+  ansible.builtin.cron:
+    name: Save status
+    minute: 0
+    job: "touch /upload/status"

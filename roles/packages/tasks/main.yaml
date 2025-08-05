@@ -1,0 +1,23 @@
+- name: Install packages
+  apt:
+    pkg:
+      - vim
+      - tmux
+      - git
+      - python3-pip
+      - i2c-tools
+
+- name: Setup timezone
+  community.general.timezone:
+    name: Europe/Berlin
+
+- name: Fix bashrc
+  blockinfile:
+    state: present
+    path: /root/.bashrc
+    block: |
+      PS1='\e[0;31m${debian_chroot:+($debian_chroot)}\h\e[m:\w\$ '
+      export LS_OPTIONS='--color=auto'
+      eval "$(dircolors)"
+      alias ls='ls $LS_OPTIONS'
+      alias ll='ls $LS_OPTIONS -la'

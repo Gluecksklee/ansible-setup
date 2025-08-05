@@ -1,0 +1,49 @@
+- name: Enable dwc2 dtoverlay
+  lineinfile:
+    state: present
+    path: /boot/config.txt
+    line: "dtoverlay=dwc2"
+    regexp: "dtoverlay=dwc2"
+
+- name: Add modules to commandline
+  lineinfile:
+    state: present
+    path: /boot/cmdline.txt
+    regexp: '^([\w\d\s\=\.\/\,\-]* rootwait)( modules-load=dwc2,g_ether )?([\w\d\s\=\.\/\,\-]*)$'
+    backrefs: yes
+    line: '\1 modules-load=dwc2,g_ether \3'
+
+- name: Setup static ip
+  blockinfile:
+    state: present
+    path: /etc/network/interfaces.d/usb0
+    create: true
+    block: |
+      auto usb0
+      allow-hotplug usb0
+      iface usb0 inet static
+          metric 200
+          address 10.0.11.2/24
+          gateway 10.0.11.1
+
+- name: Setup wlan0 as default route for internet
+  blockinfile:
+    state: present
+    path: /etc/network/interfaces.d/wlan0
+    create: true
+    block: |
+      auto wlan0
+      iface wlan0 inet dhcp
+          up ip route add default via $(ip -4 route show default | awk '/default/ {print $3}') dev $IFACE
+          metric 101
+
+- name: Add WLAN credetials to wpa_supplicant
+  blockinfile:
+    state: present
+    path: /etc/wpa_supplicant/wpa_supplicant.conf
+    block: |
+      network={
+        ssid="Gluecksklee"
+        psk="REPLACE_WITH_YOUR_PASSWORD"
+        priority=3
+      }
